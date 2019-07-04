@@ -74,7 +74,11 @@ MonoBehaviour:
   m_MinSize: {x: 234, y: 494}
   m_MaxSize: {x: 10004, y: 14044}
   vertical: 1
+<<<<<<< HEAD
   controlID: 133
+=======
+  controlID: 65
+>>>>>>> 61c1463608ef0b43a2c1250623e4daee0e6f8e8a
 --- !u!114 &4
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -146,7 +150,11 @@ MonoBehaviour:
   m_MinSize: {x: 713, y: 494}
   m_MaxSize: {x: 18008, y: 14044}
   vertical: 0
+<<<<<<< HEAD
   controlID: 132
+=======
+  controlID: 64
+>>>>>>> 61c1463608ef0b43a2c1250623e4daee0e6f8e8a
 --- !u!114 &7
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -192,7 +200,11 @@ MonoBehaviour:
   m_MinSize: {x: 202, y: 444}
   m_MaxSize: {x: 4002, y: 8044}
   vertical: 1
+<<<<<<< HEAD
   controlID: 110
+=======
+  controlID: 129
+>>>>>>> 61c1463608ef0b43a2c1250623e4daee0e6f8e8a
 --- !u!114 &9
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -476,7 +488,11 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
+<<<<<<< HEAD
       m_ExpandedIDs: 8efbffff
+=======
+      m_ExpandedIDs: fcf9ffff
+>>>>>>> 61c1463608ef0b43a2c1250623e4daee0e6f8e8a
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -580,14 +596,20 @@ MonoBehaviour:
   m_LastFolders:
   - Assets/Audios
   m_LastFoldersGridSize: 16
-  m_LastProjectPath: G:\UnityProjects\CigaGameJam2019\CigaGameJam2019_DreamTeam\DreamTeamHappyGame
+  m_LastProjectPath: E:\UnityWorld\CiGAGameJam2019Git\CigaGameJam2019_DreamTeam\DreamTeamHappyGame
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
+<<<<<<< HEAD
     m_SelectedIDs: 922c0000
     m_LastClickedID: 11410
     m_ExpandedIDs: 000000005a290000
+=======
+    m_SelectedIDs: ea290000
+    m_LastClickedID: 10730
+    m_ExpandedIDs: 00000000ea290000
+>>>>>>> 61c1463608ef0b43a2c1250623e4daee0e6f8e8a
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
