@@ -6,9 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/WGY/Scenes/Start.unity
+    path: Assets/WGY/Scenes/SC_Title.unity
     guid: 6fb1998d46ec841b69598d24267caeb1
   - enabled: 1
-    path: Assets/WGY/Scenes/SampleScene.unity
+    path: Assets/WGY/Scenes/SC_Main.unity
     guid: 3ef321746e1bb43078097110e1ecae64
   m_configObjects: {}
