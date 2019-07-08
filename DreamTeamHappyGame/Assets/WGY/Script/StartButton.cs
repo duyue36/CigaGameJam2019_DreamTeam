@@ -10,6 +10,7 @@ public class StartButton : MonoBehaviour
     {
         SceneManager.LoadScene("SC_Main");
     }
+
     
     
     // Start is called before the first frame update
@@ -18,12 +19,8 @@ public class StartButton : MonoBehaviour
         
     }
 
-    // Update is called once per frame
-    void Update()
+    public void ExitGame()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            LoadMainScene();
-        }
+        Application.Quit();
     }
 }

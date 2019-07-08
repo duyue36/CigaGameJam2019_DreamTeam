@@ -27,7 +27,7 @@ ScriptsOnlyBuild:
     - UnityEngine.UI.Slider
     - UnityEngine.UI.Text
   sceneClasses:
-    Assets/WGY/Scenes/SampleScene.unity:
+    Assets/WGY/Scenes/SC_Main.unity:
     - Class: 1
       Script: {instanceID: 0}
     - Class: 4
@@ -116,7 +116,7 @@ ScriptsOnlyBuild:
       Script: {instanceID: 0}
     - Class: 258
       Script: {instanceID: 0}
-    Assets/WGY/Scenes/Start.unity:
+    Assets/WGY/Scenes/SC_Title.unity:
     - Class: 1
       Script: {instanceID: 0}
     - Class: 4
@@ -902,7 +902,7 @@ ScriptsOnlyBuild:
     className: CinemachineBlendListCamera
   - hash:
       serializedVersion: 2
-      Hash: d79c3da92c72045499e8e7cfacfcf0f8
+      Hash: e0006308d7b0bd95ba0c8e0a8423e1ef
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: PolicySystem
@@ -1124,6 +1124,6 @@ ScriptsOnlyBuild:
     className: PlayableTrack
   platform: 19
   scenePathNames:
-  - Assets/WGY/Scenes/Start.unity
-  - Assets/WGY/Scenes/SampleScene.unity
-  playerPath: "C:/Users/duyue/Desktop/CIGA2019/7\u7EC4_\u5996\u8273\u8D31\u8D27\u6551\u5E02\u5F55/Team7_Build/DreamTeamHappyGame.exe"
+  - Assets/WGY/Scenes/SC_Title.unity
+  - Assets/WGY/Scenes/SC_Main.unity
+  playerPath: "G:/\u5996\u8273\u8D31\u8D27\u6551\u4E16\u5F55/Build/DreamTeamHappyGame.exe"

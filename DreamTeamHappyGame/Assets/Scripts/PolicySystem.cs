@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using HIV;
+using UnityEngine.SceneManagement;
 
 public enum CompanyName { Baidu, XiaoMi, Musk};
 public enum PolicyReputation { Negative, Positive};
-public enum GameState { PickPolicy, Battle, FinalResult};
+public enum GameState { PickPolicy, Battle, PublishPolicy, FinalResult};
 public enum Winner { Player1, Player2};
 public enum CompanyReputation {OverwhelminglyPositive, MostlyPositive, Positive, Mixed, Negative, MostlyNegative, OverwhelminglyNegative};
 
@@ -78,6 +79,8 @@ public class PolicySystem : MonoBehaviour
     public Color color_Transparent;
     public Color color_notTransparent;
 
+    public Text text_CurrentPublishPolicy;
+
     
 
     [Header("Count Down")]
@@ -91,6 +94,8 @@ public class PolicySystem : MonoBehaviour
     public SpriteRenderer sp_number2;
     public SpriteRenderer sp_number1;
     public SpriteRenderer sp_letsGo;
+
+    public bool shouldReturnToTitle;
 
     [Header("Event And Result UI")]
     public Image image_closeBaiduSpace;
@@ -107,6 +112,7 @@ public class PolicySystem : MonoBehaviour
     public Image image_Negative;
     public Image image_mostNegative;
     public Image image_OverNegative;
+    public Image image_End;
 
     public bool baiduSpaceEventTriggered;
     public bool weiZeXiEventTriggered;
@@ -129,6 +135,11 @@ public class PolicySystem : MonoBehaviour
     public OnePolicy policy_two_negative_baidu_player2;
     public OnePolicy policy_three_positive_baidu_player2;
     public OnePolicy policy_three_negative_baidu_player2;
+
+    [Header("Audios")]
+    public AudioSource audioSource;
+    public AudioClip ac_cheers;
+    public AudioClip ac_hiss;
 
     private bool canTriggerNextStep = true;
 
@@ -182,11 +193,23 @@ public class PolicySystem : MonoBehaviour
         thinkFrame_player1.transform.position = Camera.main.WorldToScreenPoint(trans_Player1.position + offset_thinkFrame_p1);
         thinkFrame_player2.transform.position = Camera.main.WorldToScreenPoint(trans_Player2.position + offset_thinkFrame_p2);
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        //if (Input.GetKeyDown(KeyCode.Space))
+        //{
+        //    Debug.Log("Space is pressed");
+        //    //StartCoroutine(ShowEventImage(image_closeBaiduSpace, 5, 1f));
+        //    NextStep();
+        //}
+
+        if (Input.GetKeyDown(KeyCode.Minus))
         {
-            Debug.Log("Space is pressed");
-            //StartCoroutine(ShowEventImage(image_closeBaiduSpace, 5, 1f));
-            NextStep();
+            Debug.Log("Player 1 win");
+            GameManager.Singleton.PlayerWin(1);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Equals))
+        {
+            Debug.Log("Player 2 win");
+            GameManager.Singleton.PlayerWin(2);
         }
 
         
@@ -212,7 +235,18 @@ public class PolicySystem : MonoBehaviour
             FindObjectOfType<StickMan2>().enabled = true;
         }
 
-        if (currentRound == 1 && gameState == GameState.Battle && canTriggerNextStep) //Round 1 battle 阶段进入 Round 2 提案 阶段
+        if (currentRound == 1 && gameState == GameState.Battle && canTriggerNextStep) //Round 1 battle 阶段进入 Round 1 publish 阶段
+        {   
+            gameState = GameState.PublishPolicy;
+
+            indicationText.text = "Round 1 执行提案阶段";
+
+            canTriggerNextStep = false;
+            StartCoroutine(UnlockNextStepCountDown());
+            StartCoroutine(PublishPolicyCountDown());
+        }
+
+        if (currentRound == 1 && gameState == GameState.PublishPolicy && canTriggerNextStep) //Round 1 publish 阶段进入 Round 2 提案 阶段
         {
             GameManager.Singleton.ReloadScene();
            // ExecuteWinnersPolicy(Winner.Player1);
@@ -249,7 +283,18 @@ public class PolicySystem : MonoBehaviour
             FindObjectOfType<StickMan2>().enabled = true;
         }
 
-        if (currentRound == 2 && gameState == GameState.Battle && canTriggerNextStep) //Round 2 battle 阶段进入 Round 3 提案 阶段
+        if (currentRound == 2 && gameState == GameState.Battle && canTriggerNextStep) //Round 2 battle 阶段进入 Round 2 publish 阶段
+        {
+            gameState = GameState.PublishPolicy;
+
+            indicationText.text = "Round 2 执行提案阶段";
+
+            canTriggerNextStep = false;
+            StartCoroutine(UnlockNextStepCountDown());
+            StartCoroutine(PublishPolicyCountDown());
+        }
+
+        if (currentRound == 2 && gameState == GameState.PublishPolicy && canTriggerNextStep) //Round 2 publish 阶段进入 Round 3 提案 阶段
         {
             GameManager.Singleton.ReloadScene();
 
@@ -276,7 +321,6 @@ public class PolicySystem : MonoBehaviour
 
             indicationText.text = "Round 3 Battle";
 
-            canTriggerNextStep = false;
             StartCoroutine(UnlockNextStepCountDown());
 
             ShowThinkFrame(false);
@@ -285,7 +329,19 @@ public class PolicySystem : MonoBehaviour
             FindObjectOfType<StickMan2>().enabled = true;
         }
 
-        if (currentRound == 3 && gameState == GameState.Battle && canTriggerNextStep) //进入最终结算阶段
+        if (currentRound == 3 && gameState == GameState.Battle && canTriggerNextStep) //Round 1 battle 阶段进入 Round 1 publish 阶段
+        {
+            gameState = GameState.PublishPolicy;
+
+            indicationText.text = "Round 3 执行提案阶段";
+
+            canTriggerNextStep = false;
+            StartCoroutine(UnlockNextStepCountDown());
+            StartCoroutine(PublishPolicyCountDown());
+
+        }
+
+        if (currentRound == 3 && gameState == GameState.PublishPolicy && canTriggerNextStep) //进入最终结算阶段
         {
             //ExecuteWinnersPolicy(Winner.Player1);
             canTriggerNextStep = false;
@@ -301,23 +357,23 @@ public class PolicySystem : MonoBehaviour
 
     void InitiatePolicy()
     {
-        policy_one_positive_baidu_player1.content = "继续经营百度空间";
-        policy_one_negative_baidu_player1.content = "关闭百度空间";
+        policy_one_positive_baidu_player1.content = "1.继续经营百度空间";
+        policy_one_negative_baidu_player1.content = "2.关闭百度空间";
 
-        policy_two_positive_baidu_player1.content = "将百度百科留在搜索第一页";
-        policy_two_negative_baidu_player1.content = "为了贯彻竞价排名，百度百科不必留在搜索第一页";
+        policy_two_positive_baidu_player1.content = "2.将百度百科留在搜索第一页";
+        policy_two_negative_baidu_player1.content = "1.为了贯彻竞价排名，百度百科不必留在搜索第一页";
 
-        policy_three_positive_baidu_player1.content = "优化搜索算法";
-        policy_three_negative_baidu_player1.content = "不优化搜索算法";
+        policy_three_positive_baidu_player1.content = "1.优化搜索算法";
+        policy_three_negative_baidu_player1.content = "2.不优化搜索算法";
 
-        policy_one_positive_baidu_player2.content = "留住陆奇，给他更大的权利";
-        policy_one_negative_baidu_player2.content = "解聘陆奇";
+        policy_one_positive_baidu_player2.content = "2.留住陆奇，给他更大的权利";
+        policy_one_negative_baidu_player2.content = "1.解聘陆奇";
 
-        policy_two_positive_baidu_player2.content = "关闭竞价排名";
-        policy_two_negative_baidu_player2.content = "将竞价排名转移到移动端";
+        policy_two_positive_baidu_player2.content = "1.关闭竞价排名";
+        policy_two_negative_baidu_player2.content = "2.将竞价排名转移到移动端";
 
-        policy_three_positive_baidu_player2.content = "开发百度云文档";
-        policy_three_negative_baidu_player2.content = "经营百度外卖";
+        policy_three_positive_baidu_player2.content = "2.开发百度云文档";
+        policy_three_negative_baidu_player2.content = "1.经营百度外卖";
 
 
 
@@ -362,6 +418,9 @@ public class PolicySystem : MonoBehaviour
                 button_Choice_A_Player1.image.color = pendingColor;      //重新刷新按钮颜色
                 button_Choice_B_Player1.image.color = notPendingColor;
 
+                button_Choice_A_Player2.image.color = pendingColor;      //重新刷新按钮颜色
+                button_Choice_B_Player2.image.color = notPendingColor;
+
                 break;
             case CompanyName.XiaoMi:
                 break;
@@ -376,7 +435,7 @@ public class PolicySystem : MonoBehaviour
     {
         if(gameState == GameState.PickPolicy)
         {
-            if (Input.GetKeyDown(KeyCode.W))   // player1选政策操作
+            if (Input.GetKeyDown(KeyCode.Alpha1))   // player1选政策操作
             {
                 Debug.Log("W is pressed");
 
@@ -391,7 +450,7 @@ public class PolicySystem : MonoBehaviour
 
             }
 
-            if (Input.GetKeyDown(KeyCode.S))
+            if (Input.GetKeyDown(KeyCode.Alpha2))
             {
                 Debug.Log("S is pressed");
                 if(currentChoiceNumber_Player1 == 1)
@@ -404,7 +463,7 @@ public class PolicySystem : MonoBehaviour
                 }
             }
 
-            if (Input.GetKeyDown(KeyCode.UpArrow))   // player1选政策操作
+            if (Input.GetKeyDown(KeyCode.Keypad1))   // player1选政策操作
             {
                 Debug.Log("upArrow is pressed");
 
@@ -419,7 +478,7 @@ public class PolicySystem : MonoBehaviour
 
             }
 
-            if (Input.GetKeyDown(KeyCode.DownArrow))
+            if (Input.GetKeyDown(KeyCode.Keypad2))
             {
                 Debug.Log("down Arrow is pressed");
                 if (currentChoiceNumber_Player2 == 1)
@@ -584,11 +643,13 @@ public class PolicySystem : MonoBehaviour
     {
         if(roundWinner == Winner.Player1)
         {
-            if(currentChoiceReputation_player1 == PolicyReputation.Positive)
+            text_CurrentPublishPolicy.text ="《" + currentChoiceContent_player1 + "》执行 ";
+            if (currentChoiceReputation_player1 == PolicyReputation.Positive)
             {
                 companyReputationValue += 1;
+                
 
-              
+
             }
             else
             {
@@ -613,6 +674,7 @@ public class PolicySystem : MonoBehaviour
         }
         else  //roundWinner == Winner.Player2
         {
+            text_CurrentPublishPolicy.text = "《" + currentChoiceContent_player2 + "》执行 ";
             if (currentChoiceReputation_player2 == PolicyReputation.Positive)
             {
                 companyReputationValue += 1;
@@ -678,6 +740,7 @@ public class PolicySystem : MonoBehaviour
         //再公布最终声望值运营结果
     }
 
+
     
     IEnumerator TriggerCompanyEvent()
     {
@@ -688,11 +751,15 @@ public class PolicySystem : MonoBehaviour
                 if (goodEnd_baiduSpace)
                 {
                     //show baiduspace good end
-                    StartCoroutine(ShowEventImage(image_closeBaiduSpace, 5, 1f));
+                    StartCoroutine(ShowEventImage(image_keepBaiduSpace, 5, 1f));
+                    audioSource.clip = ac_cheers;
+                    audioSource.Play();
                 }
                 else
                 {
-                    StartCoroutine(ShowEventImage(image_keepBaiduSpace, 5, 1f));
+                    StartCoroutine(ShowEventImage(image_closeBaiduSpace, 5, 1f));
+                    audioSource.clip = ac_hiss;
+                    audioSource.Play();
                 }
             }
 
@@ -707,10 +774,14 @@ public class PolicySystem : MonoBehaviour
                             yield return null;
                         }
                         StartCoroutine(ShowEventImage(image_weiZeXiLive, 5, 1f));
+                        audioSource.clip = ac_cheers;
+                        audioSource.Play();
                     }
                     else  //未触发百度空间事件
                     {
                         StartCoroutine(ShowEventImage(image_weiZeXiLive, 5, 1f));
+                        audioSource.clip = ac_hiss;
+                        audioSource.Play();
                     }
                 }
                 else   // Bad End
@@ -722,10 +793,14 @@ public class PolicySystem : MonoBehaviour
                             yield return null;
                         }
                         StartCoroutine(ShowEventImage(image_weiZeXiDead, 5, 1f));
+                        audioSource.clip = ac_hiss;
+                        audioSource.Play();
                     }
                     else  //未触发百度空间事件
                     {
                         StartCoroutine(ShowEventImage(image_weiZeXiDead, 5, 1f));
+                        audioSource.clip = ac_cheers;
+                        audioSource.Play();
                     }
                 }
                 
@@ -737,31 +812,60 @@ public class PolicySystem : MonoBehaviour
             {
                 yield return null;
             }
-            switch (companyReputation)
+
+            switch (companyReputation)               //触发公司评价
             {
                 case CompanyReputation.OverwhelminglyPositive:
-                    StartCoroutine(ShowEventImage(image_OverPostive, 10, 1f));
+                    StartCoroutine(ShowEventImage(image_OverPostive, 8, 1.5f));
 
                     break;
                 case CompanyReputation.MostlyPositive:
-                    StartCoroutine(ShowEventImage(image_MostPostive, 10, 1f));
+                    StartCoroutine(ShowEventImage(image_MostPostive, 8, 1.5f));
                     break;
                 case CompanyReputation.Positive:
-                    StartCoroutine(ShowEventImage(image_Postive, 10, 1f));
+                    StartCoroutine(ShowEventImage(image_Postive, 8, 1.5f));
                     break;
                 case CompanyReputation.Mixed:
-                    StartCoroutine(ShowEventImage(image_Mixed, 10, 1f));
+                    StartCoroutine(ShowEventImage(image_Mixed, 8, 1.5f));
                     break;
                 case CompanyReputation.Negative:
-                    StartCoroutine(ShowEventImage(image_Negative, 10, 1f));
+                    StartCoroutine(ShowEventImage(image_Negative, 8, 1.5f));
                     break;
                 case CompanyReputation.MostlyNegative:
-                    StartCoroutine(ShowEventImage(image_mostNegative, 10, 1f));
+                    StartCoroutine(ShowEventImage(image_mostNegative, 8, 1.5f));
                     break;
                 case CompanyReputation.OverwhelminglyNegative:
-                    StartCoroutine(ShowEventImage(image_OverNegative, 10, 1f));
+                    StartCoroutine(ShowEventImage(image_OverNegative, 8, 1.5f));
                     break;
             }
+
+            while (imageEventNotFinisedYet)  
+            {
+                yield return null;
+            }
+
+            //触发好坏宏颜获水
+            
+            if(companyReputationValue > 0)
+            {
+                StartCoroutine(ShowEventImage(image_HondYanHuoShui_good, 8, 1f));
+                audioSource.clip = ac_cheers;
+                audioSource.Play();
+            }
+            else
+            {
+                StartCoroutine(ShowEventImage(image_HondYanHuoShui_bad, 8, 1f));
+                audioSource.clip = ac_hiss;
+                audioSource.Play();
+            }
+
+            while (imageEventNotFinisedYet)
+            {
+                yield return null;
+            }
+
+            shouldReturnToTitle = true;
+            StartCoroutine(ShowEventImage(image_End, 4, 0.5f));
         }
         yield break;
     }
@@ -802,12 +906,34 @@ public class PolicySystem : MonoBehaviour
 
             yield return null;
         }
-
         imageEventNotFinisedYet = false;
+
+        if (shouldReturnToTitle)
+        {
+            SceneManager.LoadScene("SC_Title");
+            Destroy(gameObject);
+        }
+        
         yield break;
     }
 
 
+    IEnumerator PublishPolicyCountDown()   //选择提案倒计时
+    {
+        float timer = 0;
+        text_CurrentPublishPolicy.gameObject.SetActive(true);
+
+        while (timer <= 3)
+        {
+            timer += Time.deltaTime;
+
+            yield return null;
+        }
+
+        text_CurrentPublishPolicy.gameObject.SetActive(false);
+        NextStep();
+        yield break;
+    }
 
     IEnumerator UnlockNextStepCountDown()   //选择提案倒计时
     {

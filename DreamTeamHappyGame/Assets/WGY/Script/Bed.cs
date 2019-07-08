@@ -6,6 +6,7 @@ using UnityEngine;
 public class Bed : MonoBehaviour
 {
     public int PlayerID;
+    private bool hasTriggerOnce;
 
     [CanBeNull] public ParticleSystem HeartParticleSystem;
     
@@ -13,21 +14,37 @@ public class Bed : MonoBehaviour
     {
         if (other.gameObject.tag == "Boss")
         {
-            HeartParticleSystem.Play();
-            SoundManager.Singleton.PlayBabyCry();
-            GameManager.Singleton.PlayerWin(PlayerID);
+            if (!hasTriggerOnce)
+            {
+                if (HeartParticleSystem != null)
+                {
+                    HeartParticleSystem.Play();
+                }
+                SoundManager.Singleton.PlayBabyCry();
+                GameManager.Singleton.PlayerWin(PlayerID);
+
+                hasTriggerOnce = true;
+            }
+            
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.gameObject.tag == "Boss")
-        {
-            HeartParticleSystem.Play();
-            SoundManager.Singleton.PlayBabyCry();
-            GameManager.Singleton.PlayerWin(PlayerID);
-        }
-    }
+    //private void OnTriggerEnter2D(Collider2D other)
+    //{
+       
+    //    if (other.gameObject.tag == "Boss")
+    //    {
+    //        if (!hasTriggerOnce)
+    //        {
+    //            HeartParticleSystem.Play();
+    //            SoundManager.Singleton.PlayBabyCry();
+    //            GameManager.Singleton.PlayerWin(PlayerID);
+
+    //            hasTriggerOnce = true;
+    //        }
+            
+    //    }
+    //}
 
     // Start is called before the first frame update
     void Start()

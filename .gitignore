@@ -878,3 +878,10 @@ DreamTeamHappyGame/Temp/UnityTempFile-fec4dfaabeb4bd34899ff1b92004008f
 DreamTeamHappyGame/Temp/UnityTempFile-ffca2051156514a4e9960e203acadd42
 DreamTeamHappyGame/Assembly-CSharp-Editor.csproj
 DreamTeamHappyGame/Assembly-CSharp.csproj
+*.dll
+*.buildreport
+*.info
+*.assets
+*.config
+*.info
+*.resource
